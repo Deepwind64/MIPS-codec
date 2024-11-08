@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "mips-codec"
+version = "1.0"
+description = "A tool for encoding MIPS instructions to machine code and decoding it."
+authors = ["Deepwind64 <deepwind32@163.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^8.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
