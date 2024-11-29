@@ -1,9 +1,13 @@
-lui $1,100
-add $1,$2,$3
-sll $1,$2,10
-sllv $1,$2,$3
-jr $31
-addi $1,$2,100
-lw $1,10($2)
-bne $1,$2,10
-j 10000
+ABS.S f3, f5
+ADD r1, r2, r3
+ADDIU r1, r2, 2
+LBE r1, 12(1)
+BEQC r1,r3, 16
+j 100
+CMP.AF.D f1, f2, f3
+ins r1, r2, 13, 7
+CVT.D.W f1, f2
+DERET
+DI r1
+SDBBP 123123
+SDC1 f1, 12(3)
