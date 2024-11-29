@@ -66,7 +66,7 @@ You can use the converter from the command line. There are two modes available: 
 - Decoding from file:
 
    ```bash
-   python src/codec.py.py decode -f ./example/binary.txt -o ./output/assemble.txt
+   python src/codec.py decode -f ./example/binary.txt -o ./output/assemble.txt
    ```
 
 ## Introduction to Instruction Set CSV  
