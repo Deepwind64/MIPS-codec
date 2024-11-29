@@ -62,12 +62,16 @@ You can use the converter from the command line. There are two modes available: 
    ```bash
    python src/codec.py encode -f ./example/assemble.txt -o ./output/binary.txt
    ```
+  
+   ![encode](img/encode.png)
 
 - Decoding from file:
 
    ```bash
    python src/codec.py decode -f ./example/binary.txt -o ./output/assemble.txt
    ```
+  
+   ![decode](img/decode.png)
 
 ## Introduction to Instruction Set CSV  
 
