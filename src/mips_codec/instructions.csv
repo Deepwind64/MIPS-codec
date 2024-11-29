@@ -1,5 +1,8 @@
 name,type,op,rd,rs,rt,func,is_unsigned
-add,R,,,,,100000,False
+abs.s,R,op 6 010001,fmt 5 -,ft 5 0,fs 5 -,fd 5 -,func 6 000101
+abs.d,R,op 6 010001,fmt 5 -,ft 5 0,fs 5 -,fd 5 -,func 6 000101
+add,R,op 6 -,rs 5 -,rt 5 -,rd 5 -,shamt 5 -, func 6 100000
+add.s,R,op 6 010001,fmt 5 -,ft 5 0,fs 5 -,fd 5 -,func 6 100000
 addu,R,,,,,100001,True
 sub,R,,,,,100010,False
 subu,R,,,,,100011,True
@@ -30,3 +33,4 @@ slti,I,001010,,,,,False
 sltiu,I,001011,,,,,True
 j,J,000010,,,,,False
 jal,J,000011,,,,,False
+,,,,,,,

@@ -54,8 +54,8 @@ def read_input(input_str="", input_file=""):
 
 
 def write_output(output_str, output_file=""):
-    output_file = Path(output_file)
     if output_file:
+        output_file = Path(output_file)
         try:
             os.makedirs(output_file.parent, exist_ok=True)
             with open(output_file, "w") as file:
