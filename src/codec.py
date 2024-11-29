@@ -2,42 +2,59 @@ import argparse
 import os
 from pathlib import Path
 
-from mips_codec.model import INSTRUCTIONS, Instruction
-from mips_codec.core import ArgsError
+from model import INSTRUCTIONS, INST_BIN_MAP
+from core import ArgsError
 
 
 def encode_one(instruction: str):
     split_inst = instruction.strip().lower().split()
     format_inst = INSTRUCTIONS.get(split_inst[0])
+    extra = {}
     if not format_inst:
-        # search I-Type
-        format_inst = INSTRUCTIONS["000000"].get(split_inst[0])
+        split_name = split_inst[0].split(".")
+        if split_name[0] == "cmp":
+            extra["condn"] = split_name[1]
+            split_name[1] = "condn"
+        else:
+            extra["fmt"] = split_name[-1]
+            split_name[-1] = "fmt"
+
+        format_inst = INSTRUCTIONS.get(".".join(split_name))
 
     if format_inst is None:
-        raise ArgsError("Unknown Instruction.")
+        raise ArgsError(f"Unknown Instruction {instruction}.")
+
+    for k, v in extra.items():
+        format_inst.load_value(k, v)
 
     # remove possible space between args
     return format_inst.encode("".join(split_inst[1:]))
 
 
 def decode_one(binary_str: str) -> str:
-    op = binary_str[:6]
-    if op == "000000":
-        inner_insts = INSTRUCTIONS[op]
-    else:
-        inner_insts = INSTRUCTIONS
+    if len(binary_str) != 32 or any(i not in ("01") for i in binary_str):
+        raise ValueError(f"Binary string '{binary_str}' is invalid.")
 
-    format_inst = next(
-        (
-            inst
-            for inst in inner_insts.values()
-            if isinstance(inst, Instruction) and inst.op == op
-        ),
-        None,
-    )
-    if format_inst is None:
+    op = binary_str[:6]
+    item = INST_BIN_MAP.get(op)
+    if item is None:
         raise ArgsError("Unknown Instruction.")
-    return format_inst.decode(binary_str)
+
+    possible_insts = []
+    if isinstance(item, list):
+        possible_insts.extend(item)
+
+    if isinstance(item, dict):
+        possible_insts.extend(item["_"])
+
+        for length in item["length"]:
+            tail = binary_str[-length:]
+            insts = item[length].get(tail)
+            if insts:
+                possible_insts.extend(insts)
+
+    results = [i.decode(binary_str) for i in possible_insts]
+    return " | ".join([result for result in results if result])
 
 
 def read_input(input_str="", input_file=""):
@@ -96,18 +113,19 @@ def parse_args():
     parser.add_argument(
         "mode",
         choices=["encode", "decode"],
-        help="Choose the process mode: encode (assembly to binary) or decode (binary to assembly)."
+        help="Choose the process mode: encode (assembly to binary) or decode (binary to assembly).",
     )
 
     input_group = parser.add_mutually_exclusive_group(required=True)
     input_group.add_argument(
-        "-f", "--input_file", type=str,
-        help="Path to the input file with instructions."
+        "-f", "--input_file", type=str, help="Path to the input file with instructions."
     )
 
     parser.add_argument(
-        "-o", "--output_file", type=str,
-        help="Path to the output file. If omitted, output will be printed to the console."
+        "-o",
+        "--output_file",
+        type=str,
+        help="Path to the output file. If omitted, output will be printed to the console.",
     )
 
     return parser.parse_args()
@@ -116,7 +134,5 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     process_batch(
-        mode=args.mode,
-        input_file=args.input_file,
-        output_file=args.output_file
+        mode=args.mode, input_file=args.input_file, output_file=args.output_file
     )
